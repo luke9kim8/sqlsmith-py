@@ -27,9 +27,19 @@ class Sqltype(object):
             self.typemap[n] = Sqltype(n)
             return self.typemap[n]
 
-# def main():
-#     sqltype = Sqltype("sqltype1")
-#     print(sqltype.get("sqltype1").name)
+class Op(object):
+    def __init__(self, name, left, right, result):
+        self.name = name
+        self.left = Sqltype(left) 
+        self.right = Sqltype(right)
+        self.result = Sqltype(result) 
 
-# if __name__ == "__main__":
-#     main()
+
+
+def main():
+    sqltype = Sqltype("sqltype1")
+    print(sqltype.get("sqltype1").name)
+    op = Op("luke", "kim", "is", "aight")
+
+if __name__ == "__main__":
+    main()
