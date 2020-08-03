@@ -49,11 +49,17 @@ class Schema(object):
     def register_aggregate(self, r):
         self.aggregates.append(r)
     
-    def find_operator(self, left, right, res):
-        t = (left, right, res)
-        cons = self.index.equal_range(t)
-        if cons.first == cons.second
-            return index.
+    # def find_operator(self, left, right, res):
+    #     t = (left, right, res)
+    #     cons = self.index.equal_range(t)
+    #     if cons.first == cons.second
+    #         return index.
+
+    def generate_indexes(self):
+        for t in self.types:
+            for r in self.aggregates:
+                
+
         
 
 

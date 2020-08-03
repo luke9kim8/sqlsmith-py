@@ -26,6 +26,9 @@ class Sqltype(object):
             print("no")
             self.typemap[n] = Sqltype(n)
             return self.typemap[n]
+    
+    def consistent(self, rvalue):
+        return self == rvalue
 
 class Op(object):
     def __init__(self, name, left, right, result):
@@ -33,6 +36,8 @@ class Op(object):
         self.left = Sqltype(left) 
         self.right = Sqltype(right)
         self.result = Sqltype(result) 
+
+
 
 
 
