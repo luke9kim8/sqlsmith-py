@@ -1,6 +1,6 @@
 import sqlalchemy
 from sqlalchemy import create_engine
-from relmodel import Sqltype
+from relmodel import Sqltype, Table, Column
 from schema import Schema
 class pg_type(Sqltype):
     def __init__(self, name, oid, typdelim, typrelid, typelem, typarray, typtype):
@@ -45,6 +45,7 @@ class Schema_pqxx(Schema):
             self.arrayType = self.name2type['anyarray']
             print("done.")
 
+            # Populate tables information in schema
             print("Loading tables...")
             query = "".join(["select table_name, ",
 		        "table_schema, ",
@@ -53,15 +54,52 @@ class Schema_pqxx(Schema):
 	            "from information_schema.tables"])
             rows = engine.execute(query)
             for row in rows:
-                if no_catalog and (row[1] == "pg_catalog" or row[1] == "information_schema"):
+                _schema = row[1] 
+                _insertable = row[2]
+                _table_type = row[3]
+                if no_catalog and (_schema == "pg_catalog" or _schema == "information_schema"):
                     continue
-                self.tables.append()
+                self.tables.append(Table(row[0], _schema, True if _insertable == "YES" else False, True if _table_type == "BASE TABLE" else False))
+            print("done.")
+
+            print("Loading columns and constraints...")
+            for table in self.tables:
+                query = "".join(["select attname, "
+                            ,"atttypid "
+                            ,"from pg_attribute join pg_class c on( c.oid = attrelid ) "
+                            ,"join pg_namespace n on n.oid = relnamespace "
+                            ,"where not attisdropped "
+                            ,"and attname not in "
+                            ,"('xmin', 'xmax', 'ctid', 'cmin', 'cmax', 'tableoid', 'oid') "
+                            ," and relname = " + self.quote_name(table.name)
+                            ," and nspname = " + self.quote_name(table.schema)])
+                
+                rows = engine.execute(query)
+                for row in rows:
+                    c = Column(row[0], self.oid2type[row[1]])
+                    table.columns().append(c)
+
+                query = "".join(["select conname from pg_class t "
+                                ,"join pg_constraint c on (t.oid = c.conrelid) "
+                                ,"where contype in ('f', 'u', 'p') "
+                                ,"and relnamespace = " " (select oid from pg_namespace where nspname = "
+                                ,self.quote_name(table.schema), ")"
+                                ," and relname = ", self.quote_name(table.name)])
+                
+                rows = engine.execute(query) # TODO: Investigate why rows is empty on this query
+                for row in rows:
+                    table.constraints.append(row[0])
+            print("done.")
+
+
+
+
 
 
 
 def __main__():
     pqxx = Schema_pqxx()
-    pqxx.schema_pqxx("")
+    pqxx.schema_pqxx("", False)
 
 if __name__ == "__main__":
     __main__()
