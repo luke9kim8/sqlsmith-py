@@ -49,10 +49,25 @@ class Column:
         self.name = name
         self.name = None
 
+class Routine:
+    def __init__(self, schema, specific_name, data_type, name):
+        self.specific_name = specific_name 
+        self.schema = schema
+        self.restype = data_type
+        self.name = name
+        self.argtypes = []
+    
+    def ident(self):
+        if len(self.schema) != 0:
+            return self.schema + "." + self.name
+        else:
+            return self.name
+    
 
-def main():
-    table = Table("name", "schema", "is_insertable", "is_base_table")
-    table.columns()
 
-if __name__ == "__main__":
-    main()
+
+# def main():
+    
+
+# if __name__ == "__main__":
+#     main()
