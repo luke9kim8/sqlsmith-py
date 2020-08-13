@@ -82,7 +82,7 @@ class Schema(object):
     #     t = (left, right, res)
     #     cons = self.index.equal_range(t)
     #     if cons.first == cons.second
-    #         return index.
+            
 
     
         

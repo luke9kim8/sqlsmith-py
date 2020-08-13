@@ -5,7 +5,9 @@ class Multimap(object):
         self.base_map[key] = [value]
     def equal_range(self, key):
         # equal_range function from c++ in python
+        # get the range of the values of specified key
         self.base_map[key].sort()
         first = self.base_map[key][0]
         last = self.base_map[key][self.base_map[key].length]
         return (first, last)
+    
