@@ -45,13 +45,13 @@ class Schema(object):
         self.aggregates = []
 
         self.index = Multimap()
-        self.routines_returning_type = defaultdict(list)
-        self.aggregates_returning_type = defaultdict(list)
-        self.paramless_routines_returningType = defaultdict(list)
-        self.tables_with_columns_of_type = defaultdict(list)
-        self.operators_returning_type = defaultdict(list)
-        self.concrete_type = defaultdict(list)
-        self.base_tables = defaultdict(list)
+        self.routines_returning_type = Multimap()
+        self.aggregates_returning_type = Multimap()
+        self.paramless_routines_returningType = Multimap()
+        self.tables_with_columns_of_type = Multimap()
+        self.operators_returning_type = Multimap()
+        self.concrete_type = Multimap()
+        self.base_tables = Multimap()
 
         self.version = ""
         self.version_num = None
@@ -82,9 +82,33 @@ class Schema(object):
     #     t = (left, right, res)
     #     cons = self.index.equal_range(t)
     #     if cons.first == cons.second
+
+    def generate_indexes(self):
+        print("Generating indexes...")
+        # TODO: research how struct == is implemented in c++
+        #
+        #  bool sqltype::consistent(struct sqltype *rvalue)
+        # {
+        #     return this == rvalue;
+        # }
+        # is this method comparing pointer value? Then, how should 
+        # it be implemented in python?
+        #  - Deep Comparison?
+        #
+        
+        for _type in self.types:
+            for aggregate in self.aggregates:
+                print(aggregate.restype)
+                if _type.consistent(aggregate.restype):
+                    self.aggregates_returning_type.insert(_type, aggregate)
+            
+            for routine in self.routines:
+                if not _type.consistent(routine.restype):
+                    self.routines_returning_type.insert(_type, routine)
+                if len(routine.argtypes) == 0:
+                    self.paramless_routines_returningType.insert(_type, routine)
             
 
-    
         
 
 

@@ -10,6 +10,9 @@ class pg_type(Sqltype):
         self.typelem = typelem
         self.typarray = typarray
         self.typtype = typtype
+    def __str__(self):
+        return " | ".join([str(self.oid), str(self.typdelim), str(self.typrelid),
+                            str(self.typelem), str(self.typarray), str(self.typtype)])
 
 class Schema_pqxx(Schema):
     oid2type = {}
@@ -37,7 +40,7 @@ class Schema_pqxx(Schema):
                 t = pg_type(row[0], row[1], row[2][0], row[3], row[4], row[5], row[6][0])
                 self.oid2type[row[1]] = t
                 self.name2type[row[0]] = t
-                # TODO: Implement types.push_back(t)
+                self.types.append(t)
             self.boolType = self.name2type['bool']
             self.intType = self.name2type['int4']
             self.internalType = self.name2type['internal']
@@ -150,7 +153,8 @@ class Schema_pqxx(Schema):
                     proc.argtypes.append(t)
             print("done.")
             # TODO: Implement Generate Index Function
-            
+
+        self.generate_indexes()
                 
 
 

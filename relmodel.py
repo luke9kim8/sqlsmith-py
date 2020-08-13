@@ -63,6 +63,10 @@ class Routine:
         else:
             return self.name
     
+    def __str__(self):
+        return " | ".join([str(self.specific_name), str(self.schema), str(self.restype),
+                            str(self.name), str(self.argtypes)])
+    
 
 
 
