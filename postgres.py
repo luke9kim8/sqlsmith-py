@@ -37,7 +37,7 @@ class Schema_pqxx(Schema):
                                     "typdelim, typrelid, typelem, typarray, " + 
                                     "typtype from pg_type")
             for row in rows:
-                t = pg_type(row[0], row[1], row[2][0], row[3], row[4], row[5], row[6][0])
+                t = pg_type(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
                 self.oid2type[row[1]] = t
                 self.name2type[row[0]] = t
                 self.types.append(t)
@@ -100,7 +100,7 @@ class Schema_pqxx(Schema):
                             ,"where 0 not in (oprresult, oprright, oprleft) "])
             rows = conn.execute(query)
             for row in rows:
-                o = Op(row[0], row[1], row[2], row[3])
+                o = Op(row[0], self.oid2type[row[1]], self.oid2type[row[2]], self.oid2type[row[3]])
                 self.register_operator(o)
             print("done.")
 
@@ -114,7 +114,7 @@ class Schema_pqxx(Schema):
                             ,"and not (proretset or ", procedure_is_aggregate, " or ", procedure_is_window, ") "])
             rows = conn.execute(query)
             for row in rows:
-                proc = Routine(row[0], str(row[1]), row[2], row[3])
+                proc = Routine(row[0], str(row[1]), self.oid2type[row[2]], row[3])
                 self.register_routine(proc)
             print("done.")
 
@@ -139,7 +139,7 @@ class Schema_pqxx(Schema):
                             ,"and ", procedure_is_aggregate])
             rows = conn.execute(query)
             for row in rows:
-                proc = Routine(str(row[0]), str(row[1]), row[2], str(row[3]))
+                proc = Routine(str(row[0]), str(row[1]), self.oid2type[row[2]], str(row[3]))
                 self.register_aggregate(proc)
             print("done.")
 

@@ -35,7 +35,7 @@ class Sqltype(object):
             return self.typemap[n]
     
     def consistent(self, rvalue):
-        return self == rvalue
+        return self is rvalue
 
 class Op(object):
     def __init__(self, name, left, right, result):
@@ -45,9 +45,9 @@ class Op(object):
         self.result = Sqltype(result) 
 
 class Column:
-    def __init__(self, name, type=None):
+    def __init__(self, name, _type=None):
         self.name = name
-        self.name = None
+        self.type = _type
 
 class Routine:
     def __init__(self, schema, specific_name, data_type, name):
